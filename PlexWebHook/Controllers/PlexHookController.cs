@@ -1,14 +1,22 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace PlexWebHook.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PlexHook : ControllerBase
+    public class PlexHookController : ControllerBase
     {
+        private readonly ILogger<PlexHookController> _logger;
+        
+        public PlexHookController(ILogger<PlexHookController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpPost]
         public async Task<ActionResult<string>> Post(IFormCollection d)
         {
@@ -18,6 +26,10 @@ namespace PlexWebHook.Controllers
 
             D dd = JsonConvert.DeserializeObject<D>(payload);
 
+            string eventName = dd.Event;
+        
+            _logger.LogInformation("dd", dd);
+            
             return result;
         }
         
